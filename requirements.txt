@@ -12,7 +12,6 @@ joblib==1.1.0
 jsmin==3.0.1
 libsass==0.21.0
 MarkupSafe==2.1.1
-nltk==3.7
 numpy==1.23.0
 pytz==2022.1
 regex==2022.6.2
