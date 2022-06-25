@@ -3,8 +3,247 @@
 <html>
 <head>
     <title>HTML-Test</title>
+	<!-- Bootstrap CSS  --> 
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" 
+		integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" 
+		crossorigin="anonymous">
+    <script src="//code.jquery.com/jquery-1.12.4.min.js"></script>
+	<link rel="stylesheet" href="//use.fontawesome.com/releases/v5.0.7/css/all.css">
+  <!--
+	  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+ 		
+	  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+<link rel="stylesheet" href="//use.fontawesome.com/releases/v5.0.7/css/all.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js">
+
+ --> 
+<script>
+	
+	function MyFunction()
+	{
+		
+		e.preventDefault();
+		v_data = 
+			{
+            "judul": $("#InputJudul").val()
+			};
+			
+        $.ajax({
+            url: '/login_json',
+			data: JSON.stringify(v_data), 
+			processData: false,
+            type: 'POST',
+            dataType: 'json',
+            contentType: 'application/json',
+            success: function(response) {
+                console.log(response);
+                //~ $("#info_login").html(response['prediksi']);
+				//$("#view_login").show();
+				//~ $("#view_user").hide();
+				return false;
+            },
+            error: function(error) {
+                console.log(error);
+                //~ $("#info_login").html(error['msg'].toString());
+				//~ $("#view_login").show();
+				//~ $("#view_user").hide();
+				return false;
+            }
+        });
+	}
+	
+  $(function() {
+	  
+	  
+    $('#btn_clear_hasil').click(function(e) {
+		e.stopPropagation();
+		e.preventDefault();
+		$("#predicted").html('');
+		for(aa=0; aa<15; aa++)
+		{
+			let id_span = String(aa);
+			if($("#"+id_span).remove("badge badge-pill badge-success"))
+			{
+				$("#"+id_span).remove("badge badge-pill badge-success");
+				$("#"+id_span).remove("badge badge-pill badge-secondary");
+				$("#"+id_span).css("fontSize", "16px");
+				
+				$("#"+id_span).css('color','white');
+			}
+		}
+    });
+	  
+    $('#btn_prediksi').click(function(e) {
+		e.stopPropagation();
+		e.preventDefault();
+		v_data = 
+			{
+            "judul": $("#InputJudul").val()
+			};
+			
+        $.ajax({
+            url: '/login_json',
+			data: JSON.stringify(v_data), 
+			processData: false,
+            type: 'POST',
+            dataType: 'json',
+            contentType: 'application/json',
+            success: function(response) {
+                console.log(response);
+                //~ $("#info_login").html(response['prediksi']);
+                
+                const myArray = String(response['prediksi']).split(",");
+                //~ let lastArr = myArray[myArray.length-1];
+                
+                if (myArray.length > 0)
+                {
+					let hasil = '';
+					for(aa=0; aa<myArray.length-1; aa++)
+					{
+						if(aa != myArray.length-2)
+							hasil += myArray[aa] +', ';
+						else
+							hasil += myArray[aa];
+					}
+						$("#predicted").html(hasil);
+					
+					let lastArr = myArray[myArray.length-1];
+					const arrNum = String(lastArr).split("#");
+					
+					if (arrNum.length > 0)
+					{
+						for(aa=0; aa<arrNum.length; aa++)
+						{
+							let id_span = String(arrNum[aa].toLowerCase());
+							$("#"+id_span).css('color','lightgreen');
+							//~ $("#"+id_span).addClass("badge badge-pill badge-success").remove("badge badge-pill badge-secondary");
+							//~ $("#"+id_span).html('XXXXXXXXXXXXXXXXXXXX');
+							$("#"+id_span).css("fontSize", "20px");
+						}
+					}
+					
+					
+					
+				}
+                
+                
+				//$("#view_login").show();
+				//~ $("#view_user").show();
+				return false;
+            },
+            error: function(error) {
+                console.log(error);
+                //~ $("#info_login").html(error['msg'].toString());
+				//~ $("#view_login").show();
+				//~ $("#view_user").show();
+				return false;
+            }
+        });
+    });
+});
+
+</script>
+    
 </head>
-<body>
-<h1>Hello Flask html</h1>
+<body style="padding: 20px;">
+	
+	
+            <header class="main-header-top hidden-print">
+				</header>
+	
+<h1>Klasifikasi Aspek Gesi Multi-Label
+</h1>
+
+<div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-block">
+
+                    <div id="up1">
+	
+
+                            <div class="md-card-block">
+                                <div class="form-group">
+                                    <label for="exampleTextarea" class="form-control-label">Input Judul Artikel Imliah</label>
+                                    <textarea name="InputJudul" id="InputJudul" rows="5" cols="20" id="tbInputJudul" class="form-control" spellcheck="false">
+</textarea>
+                                </div>
+
+                                <div class="">
+									
+									<input type="button" class="btn btn-primary"  id="btn_prediksi" value="Prediksi"> </input>
+        
+									<input type="button" class="btn btn-secondary"  id="btn_clear_hasil" value="Clear Hasil"> </input>
+       
+                                </div>
+                                <br />
+
+                                <div class="row label-bagdes">
+                                    <!-- Label starts -->
+                                    <div class="col-md-12">
+                                        <div class="card">
+                                            <div class="card-header">
+                                                <h5 class="card-header-text">Hasil prediksi Aspek GESI: 
+                                                <span style='color: green; font-weight: bold;' id='predicted'></span> 
+                                                </h5>
+                                                <div class="f-right">
+                                                    <a href="#" data-toggle="modal" data-target="#labels-Modal">
+                                                        <i class="icofont icofont-code-alt"></i>
+                                                    </a>
+                                                </div>
+                                            </div>
+
+                                            <div class="row card-block">
+                                                <div class="col-md-12">
+													
+													<h5 style="margin: 10px;">Aspek-aspek GESI</h5>
+				<span id="0" class="badge badge-pill badge-secondary" style="font-size: 16px; margin: 7px;">Gender</span>
+				<span id="1" class="badge badge-pill badge-secondary" style="font-size: 16px; margin: 7px;">Perempuan</span>
+				<span id="2" class="badge badge-pill badge-secondary" style="font-size: 16px; margin: 7px;">Anak</span>
+				<span id="3" class="badge badge-pill badge-secondary" style="font-size: 16px; margin: 7px;">Kemiskinan</span>
+													
+				<span id="4" class="badge badge-pill badge-secondary" style="font-size: 16px; margin: 7px;">Rentan</span>
+				<span id="5" class="badge badge-pill badge-secondary" style="font-size: 16px; margin: 7px;">Disabilitas</span>
+				<span id="6" class="badge badge-pill badge-secondary" style="font-size: 16px; margin: 7px;">Minoritas</span>
+				<span id="7" class="badge badge-pill badge-secondary" style="font-size: 16px; margin: 7px;">Lansia</span>
+
+				<span id="8" class="badge badge-pill badge-secondary" style="font-size: 16px; margin: 7px;">Kasta/Etnik</span>
+				<span id="9" class="badge badge-pill badge-secondary" style="font-size: 16px; margin: 7px;">Tertinggal</span>
+				<span id="10" class="badge badge-pill badge-secondary" style="font-size: 16px; margin: 7px;">Masyarakat Adat</span>
+				<span id="11" class="badge badge-pill badge-secondary" style="font-size: 16px; margin: 7px;">Buruh</span>
+				
+				<span id="12" class="badge badge-pill badge-secondary" style="font-size: 16px; margin: 7px;">Pembantu RT</span>
+				<span id="13" class="badge badge-pill badge-secondary" style="font-size: 16px; margin: 7px;">Pengungsi</span>
+				<span id="14" class="badge badge-pill badge-secondary" style="font-size: 16px; margin: 7px;">Korban</span>
+
+
+                                                </div>
+                                            </div>
+                                            <!-- Label ends -->
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        
+</div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+
+         
+<!--
+<div id="view_user" style="display: none;">
+	
+	<span>Informasi: </span><span id="info_login" style="background-color: yellow; padding: 10px;"></span>
+          
+</div>
+-->
+
 </body>
 </html>
