@@ -8,7 +8,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.feature_extraction.text import TfidfVectorizer	
 import sqlite3				                                  
 # ~ from nltk.corpus import stopwords
-import nltk
+# ~ import nltk
 
 # ~ import tensorflow as tf
 # ~ from tensorflow import keras
@@ -61,23 +61,23 @@ for category in categories:
 	idx += 1
 
 
-def getGesiDataset(dir_data, p_test_size=0.2):
-	dts = load_files(dir_data)
+# ~ def getGesiDataset(dir_data, p_test_size=0.2):
+	# ~ dts = load_files(dir_data)
 
-	print('dts: ',(dts.keys()))
-	print('dts: ',(dts['target']))
+	# ~ print('dts: ',(dts.keys()))
+	# ~ print('dts: ',(dts['target']))
 
 
-	print('data len: ',len(dts['data']))
-	print('target len: ',len(dts['target']))
+	# ~ print('data len: ',len(dts['data']))
+	# ~ print('target len: ',len(dts['target']))
 
-	X_train, X_test, y_train, y_test = train_test_split( dts['data'], dts['target'], 
-		test_size=p_test_size, random_state=1, stratify=dts['target'])
+	# ~ X_train, X_test, y_train, y_test = train_test_split( dts['data'], dts['target'], 
+		# ~ test_size=p_test_size, random_state=1, stratify=dts['target'])
 	
-	return X_train, X_test, y_train, y_test
+	# ~ return X_train, X_test, y_train, y_test
 
 
-X_train, X_test, y_train, y_test = getGesiDataset('train')
+# ~ X_train, X_test, y_train, y_test = getGesiDataset('train')
 
 # ~ inggris = stopwords.words('english')
 # ~ indo = stopwords.words('indonesian')
@@ -87,8 +87,8 @@ vectorizer = TfidfVectorizer(max_df=0.5, max_features=n_features,
                                  #use_idf=opts.use_idf
                                  )  
                                  
-X_train = vectorizer.fit_transform(X_train)  
-X_test = vectorizer.transform(X_test) 
+# ~ X_train = vectorizer.fit_transform(X_train)  
+# ~ X_test = vectorizer.transform(X_test) 
 
 
 
