@@ -214,4 +214,4 @@ def get_user(metode,data):
 
 if __name__ == '__main__':
     # ~ app.run(debug=True, host='192.168.20.3', port=5500)
-    app.run(debug=True, host='0.0.0.0', port=5500)
+    app.run()
