@@ -65,6 +65,7 @@
     $('#btn_clear_hasil').click(function(e) {
 		e.stopPropagation();
 		e.preventDefault();
+		$("#non_gesi").hide('fast');
 		$("#predicted").html('');
 		for(aa=0; aa<15; aa++)
 		{
@@ -83,6 +84,16 @@
     $('#btn_prediksi').click(function(e) {
 		e.stopPropagation();
 		e.preventDefault();
+		
+		$("#non_gesi").hide('fast');
+		
+		if($("#InputJudul").val().length < 10)
+		{
+			alert('Minimal judul 10 karakter');
+		return false;	
+		}
+		
+		
 		v_data = 
 			{
             "judul": $("#InputJudul").val()
@@ -102,7 +113,7 @@
                 const myArray = String(response['prediksi']).split(",");
                 //~ let lastArr = myArray[myArray.length-1];
                 
-                if (myArray.length > 0)
+                if (myArray.length > 1)
                 {
 					let hasil = '';
 					for(aa=0; aa<myArray.length-1; aa++)
@@ -131,6 +142,11 @@
 					
 					
 					
+				}
+				else
+				{
+					$("#non_gesi").show('slow');
+					$("#predicted").html('Non-Gesi');
 				}
                 
                 
@@ -222,6 +238,8 @@
 				<span id="12" class="badge badge-pill badge-secondary" style="font-size: 16px; margin: 7px;">Pembantu RT</span>
 				<span id="13" class="badge badge-pill badge-secondary" style="font-size: 16px; margin: 7px;">Pengungsi</span>
 				<span id="14" class="badge badge-pill badge-secondary" style="font-size: 16px; margin: 7px;">Korban</span>
+
+				<span id="non_gesi" class="badge badge-pill badge-danger" style="font-size: 16px; margin: 7px; display: none;">Non-Gesi</span>
 
 
                                                 </div>

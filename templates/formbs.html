@@ -1,0 +1,315 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <meta name="google-site-verification" content="kCT200-J0rfczENRkJQdYCqsDKkUo3Hvr3KZic_otwU" />
+
+    <meta name="description" content="Sb Admin dashboard migrated to Python by AppSeed" />
+    <meta name="author" content="startbootstrap & AppSeed" />
+    
+    <title>
+        Gender Equality and Social Inclusion (GESI) Classification
+    </title>
+
+    <link href="https://cdn.jsdelivr.net/npm/simple-datatables@latest/dist/style.css" rel="stylesheet" />
+    <link href="https://appsrv1-147a1.kxcdn.com/sb-admin/css/styles.min.css" rel="stylesheet" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/js/all.min.js" crossorigin="anonymous"></script>
+
+    <!-- Specific Page CSS goes HERE  -->
+    
+</head>
+<body class="sb-nav-fixed">
+        
+    
+<nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
+            <!-- Navbar Brand-->
+            <a class="navbar-brand ps-3" href="index.html">Classification</a>
+            <!-- Sidebar Toggle-->
+            <button class="btn btn-link btn-sm order-1 order-lg-0 me-4 me-lg-0" id="sidebarToggle" href="#!"><i class="fas fa-bars"></i></button>
+            
+            <form class="d-none d-md-inline-block form-inline " >
+                <div class="input-group" >
+                    <label class='text-white'>Gender Equality and Social Inclusion (GESI)</label>
+                </div>
+            </form>
+            
+            <!-- Navbar Search-->
+            <form class="d-none d-md-inline-block form-inline ms-auto me-0 me-md-3 my-2 my-md-0" style='display: none;'>
+                <div class="input-group" style='display: none;'>
+                    <input class="form-control" type="text" placeholder="Search for..." aria-label="Search for..." aria-describedby="btnNavbarSearch" />
+                    <button class="btn btn-primary" id="btnNavbarSearch" type="button"><i class="fas fa-search"></i></button>
+                </div>
+            </form>
+            <!-- Navbar-->
+            <ul class="navbar-nav ms-auto ms-md-0 me-3 me-lg-4"  style='display: none;'>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false"><i class="fas fa-user fa-fw"></i></a>
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                        <li><a class="dropdown-item" href="#!">Settings</a></li>
+                        <li><a class="dropdown-item" href="#!">Activity Log</a></li>
+                        <li><hr class="dropdown-divider" /></li>
+                        <li><a class="dropdown-item" href="/logout">Logout</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </nav>
+
+    <div id="layoutSidenav">
+        <div id="layoutSidenav_nav">
+
+            
+		<nav class="sb-sidenav accordion sb-sidenav-dark" id="sidenavAccordion">
+			<div class="sb-sidenav-menu">
+				<div class="nav">
+					<div class="sb-sidenav-menu-heading">Interface</div>
+					<a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseLayouts" aria-expanded="false" aria-controls="collapseLayouts">
+						<div class="sb-nav-link-icon"><i class="fas fa-columns"></i></div>
+						Menu
+						<div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+					</a>
+					<div class="collapse" id="collapseLayouts" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
+						<nav class="sb-sidenav-menu-nested nav">
+							<a class="nav-link" href="/">Klasifikasi</a>
+							<a class="nav-link" href="/judul">History</a>
+						</nav>
+					</div>
+				</div>
+			</div>
+		</nav>
+            
+        </div>
+        <div id="layoutSidenav_content">
+        
+            
+
+    <main>
+        <div class="container-fluid px-4">
+			 <h2 class="mt-4 mb-2">Klasifikasi Aspek Gesi Multi-Label</h2>
+				
+			
+			
+<div class="row">
+        <div class="col-md-12">
+            <div class="card">
+				
+                <div class="card-header">
+					Masukkan Judul Artikel Imliah
+					</div>
+				
+                <div class="card-block">
+
+                    <div id="up1">
+	
+
+                            <div class="md-card-block">
+                                <div class="form-group">
+                                    <textarea name="InputJudul" id="InputJudul" rows="5" cols="20" id="tbInputJudul" class="form-control" spellcheck="false">
+</textarea>
+                                </div>
+
+                                <div class="">
+									
+									<input type="button" class="btn btn-primary"  id="btn_prediksi" value="Prediksi" onclick="predict()"> </input>
+        
+									<input type="button" class="btn btn-secondary"  id="btn_clear_hasil" value="Clear Hasil" onclick="clearHasil()"> </input>
+       
+                                </div>
+                                
+	<script>
+
+	function predict()
+	{
+		v_data = 
+			{
+			"judul": $("#InputJudul").val()
+			};
+			
+			
+		$("#non_gesi").hide('fast');
+		$.ajax({
+			url: '/login_json',
+			data: JSON.stringify(v_data), 
+			processData: false,
+			type: 'POST',
+			dataType: 'json',
+			contentType: 'application/json',
+			success: function(response, status, xhr) {
+				console.log(response);
+				//~ $("#info_login").html(response['prediksi']);
+				
+				const myArray = String(response['prediksi']).split(",");
+				//~ let lastArr = myArray[myArray.length-1];
+				
+				
+				console.log(myArray.length);
+				if (myArray.length > 1)
+				{
+					let hasil = '';
+					for(aa=0; aa<myArray.length-1; aa++)
+					{
+						if(aa != myArray.length-2)
+							hasil += myArray[aa] +', ';
+						else
+							hasil += myArray[aa];
+					}
+						$("#predicted").html(hasil);
+					
+					let lastArr = myArray[myArray.length-1];
+					const arrNum = String(lastArr).split("#");
+					
+					if (arrNum.length > 0)
+					{
+						for(aa=0; aa<arrNum.length; aa++)
+						{
+							let id_span = String(arrNum[aa].toLowerCase());
+							$("#"+id_span).css('color','lightgreen');
+							$("#"+id_span).css("fontSize", "20px");
+						}
+					}
+				}
+				else
+				{
+					$("#non_gesi").show('slow');
+					$("#predicted").html('Non-Gesi');
+				}
+				return false;
+			}
+		});
+	} // end function 
+	function clearHasil()
+	{
+		
+		$("#non_gesi").hide('fast');
+		$("#predicted").html('');
+		for(aa=0; aa<15; aa++)
+		{
+			let id_span = String(aa);
+			if($("#"+id_span).remove("badge badge-pill badge-success"))
+			{
+				$("#"+id_span).remove("badge badge-pill badge-success");
+				$("#"+id_span).remove("badge badge-pill badge-secondary");
+				$("#"+id_span).css("fontSize", "16px");
+				$("#"+id_span).css('color','white');
+			}
+		}
+	}
+
+	</script>
+                                
+                                <br />
+
+                                <div class="row label-bagdes">
+                                    <!-- Label starts -->
+                                    <div class="col-md-12">
+                                        <div class="card">
+                                            <div class="card-header">
+                                                <h5 class="card-header-text">Hasil prediksi Aspek GESI: 
+                                                <span style='color: green; font-weight: bold;' id='predicted'></span> 
+                                                </h5>
+                                                <div class="f-right">
+                                                    <a href="#" data-toggle="modal" data-target="#labels-Modal">
+                                                        <i class="icofont icofont-code-alt"></i>
+                                                    </a>
+                                                </div>
+                                            </div>
+
+                                            <div class="row card-block">
+                                                <div class="col-md-12">
+													
+													<h5 style="margin: 10px;">Aspek-aspek GESI</h5>
+													
+				<span class="badge rounded-pill bg-secondary" style="font-size: 16px; margin: 7px;">Secondary</span>
+				<span id="0" class="badge rounded-pill bg-secondary" style="font-size: 16px; margin: 7px;">Gender</span>
+				<span id="1" class="badge rounded-pill bg-secondary" style="font-size: 16px; margin: 7px;">Perempuan</span>
+				<span id="2" class="badge rounded-pill bg-secondary" style="font-size: 16px; margin: 7px;">Anak</span>
+				<span id="3" class="badge rounded-pill bg-secondary" style="font-size: 16px; margin: 7px;">Kemiskinan</span>
+													
+				<span id="4" class="badge rounded-pill bg-secondary" style="font-size: 16px; margin: 7px;">Rentan</span>
+				<span id="5" class="badge rounded-pill bg-secondary" style="font-size: 16px; margin: 7px;">Disabilitas</span>
+				<span id="6" class="badge rounded-pill bg-secondary" style="font-size: 16px; margin: 7px;">Minoritas</span>
+				<span id="7" class="badge rounded-pill bg-secondary" style="font-size: 16px; margin: 7px;">Lansia</span>
+
+				<span id="8" class="badge rounded-pill bg-secondary" style="font-size: 16px; margin: 7px;">Kasta/Etnik</span>
+				<span id="9" class="badge rounded-pill bg-secondary" style="font-size: 16px; margin: 7px;">Tertinggal</span>
+				<span id="10" class="badge rounded-pill bg-secondary" style="font-size: 16px; margin: 7px;">Masyarakat Adat</span>
+				<span id="11" class="badge rounded-pill bg-secondary" style="font-size: 16px; margin: 7px;">Buruh</span>
+				
+				<span id="12" class="badge rounded-pill bg-secondary" style="font-size: 16px; margin: 7px;">Pembantu RT</span>
+				<span id="13" class="badge rounded-pill bg-secondary" style="font-size: 16px; margin: 7px;">Pengungsi</span>
+				<span id="14" class="badge rounded-pill bg-secondary" style="font-size: 16px; margin: 7px;">Korban</span>
+				
+				<span id="non_gesi" class="badge rounded-pill bg-danger" style="font-size: 16px; margin: 7px; display: none;">Non-Gesi</span>
+
+
+                                                </div>
+                                            </div>
+                                            <!-- Label ends -->
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        
+</div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+
+			
+			
+            <div class="row" style='display: none;'>
+                <div class="col-xl-6">
+                    <div class="card mb-4">
+                        <div class="card-body"><canvas id="myAreaChart" width="100%" height="40"></canvas></div>
+                    </div>
+                </div>
+                <div class="col-xl-6">
+                    <div class="card mb-4">
+                        <div class="card-body"><canvas id="myBarChart" width="100%" height="40"></canvas></div>
+                    </div>
+                </div>
+            </div>
+		</div>
+    </main>
+
+       
+    <footer class="py-4 bg-light mt-auto">
+        <div class="container-fluid px-4">
+            <div class="d-flex align-items-center justify-content-between small">
+                <div class="text-muted">
+                    &copy; Powered by <a target="_blank" href="#">Gesi Research Team</a> & 
+                    <a href="https://scikit-learn.org/stable/modules/tree.html" >Decision Tree</a>
+                </div>
+                <div>
+                </div>
+            </div>
+        </div>
+    </footer>
+    
+        </div>
+    </div>
+
+    <script src="//code.jquery.com/jquery-1.12.4.min.js"></script>
+<!--
+    <script src="https://code.jquery.com/jquery-3.6.0.js"></script>
+-->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+    <script src="https://appsrv1-147a1.kxcdn.com/sb-admin/js/scripts.js"></script>
+    <!-- Specific Page JS goes HERE  -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js" crossorigin="anonymous"></script>
+    <script src="https://appsrv1-147a1.kxcdn.com/sb-admin/demo/chart-area-demo.js"></script>
+    <script src="https://appsrv1-147a1.kxcdn.com/sb-admin/demo/chart-bar-demo.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/simple-datatables@latest" crossorigin="anonymous"></script>
+    <script src="https://appsrv1-147a1.kxcdn.com/sb-admin/js/datatables-simple-demo.js"></script>
+
+
+        
+</body>
+</html>
