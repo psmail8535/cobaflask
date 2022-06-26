@@ -1,41 +1,32 @@
+
 from flask import Flask, render_template, request
 from flask_restful import Resource, Api
 from flask import jsonify
 from threading import Lock
-import pickle #, scipy
+import pickle 
 from sklearn.datasets import load_files
 from sklearn.model_selection import train_test_split
 from sklearn.feature_extraction.text import TfidfVectorizer	
-import sqlite3				                                  
-# ~ from nltk.corpus import stopwords
-# ~ import nltk
+import sqlite3		
+import os, sys, json
 
-# ~ import tensorflow as tf
-# ~ from tensorflow import keras
-# ~ import keras
-
-import os, sys
-
-# ~ import re
-# ~ import numpy as np
 import pandas as pd
 from sklearn.naive_bayes import MultinomialNB
 from sklearn.metrics import accuracy_score
 from sklearn.multiclass import OneVsRestClassifier
 
 from sklearn.tree import DecisionTreeClassifier
-# ~ from nltk.corpus import stopwords
-# ~ stop_words = set(stopwords.words('english'))
 from sklearn.svm import LinearSVC
 from sklearn.linear_model import LogisticRegression
 from sklearn.pipeline import Pipeline
 
+DEFAULT_PATH = os.path.join(os.path.dirname(__file__), 'the_data.sqlite3')
+def db_connect(db_path=DEFAULT_PATH):
+    con = sqlite3.connect(db_path)
+    return con
 
 app = Flask(__name__)
 api = Api(app)
-# ~ nltk.download('stopwords')
-
-
 
 categories = [  
 		'Gender','Perempuan','Anak','Kemiskinan','Rentan',
@@ -60,56 +51,19 @@ for category in categories:
 	print('Load model: ', filename)
 	idx += 1
 
-
-# ~ def getGesiDataset(dir_data, p_test_size=0.2):
-	# ~ dts = load_files(dir_data)
-
-	# ~ print('dts: ',(dts.keys()))
-	# ~ print('dts: ',(dts['target']))
-
-
-	# ~ print('data len: ',len(dts['data']))
-	# ~ print('target len: ',len(dts['target']))
-
-	# ~ X_train, X_test, y_train, y_test = train_test_split( dts['data'], dts['target'], 
-		# ~ test_size=p_test_size, random_state=1, stratify=dts['target'])
-	
-	# ~ return X_train, X_test, y_train, y_test
-
-
-# ~ X_train, X_test, y_train, y_test = getGesiDataset('train')
-
-# ~ inggris = stopwords.words('english')
-# ~ indo = stopwords.words('indonesian')
 n_features = 2 ** 16
 vectorizer = TfidfVectorizer(max_df=0.5, max_features=n_features,
                                  min_df=2, stop_words=None
                                  #use_idf=opts.use_idf
                                  )  
-                                 
-# ~ X_train = vectorizer.fit_transform(X_train)  
-# ~ X_test = vectorizer.transform(X_test) 
-
-
-
-# ~ filename = 'DecisionTree.sav'
+                          
 filename = 'SVC.sav'
 modelSvc = pickle.load(open(filename, 'rb'))
 filename = 'SVC.sav'
 modelDtree = pickle.load(open(filename, 'rb'))
-# ~ filename = 'modelTF564.h5'
-# ~ modelTF = None
-# ~ with tf.device('/device:cpu:0'):
-# ~ modelTF = keras.models.load_model(filename)
 
 labels = ['Gesi','Non Gesi']
 
-
-# ~ def createSingleTestDataTF(p_judul):
-	# ~ lst_test = [p_judul]
-	# ~ single_test = vectorizer.transform(lst_test) 
-	# ~ single_test = scipy.sparse.csr_matrix.todense(single_test)
-	# ~ return single_test
 	
 def createSingleTestData(p_judul):
 	lst_test = [p_judul]
@@ -151,6 +105,7 @@ def prediksi(p_judul, p_metode):
 		
 		kategori_res = []
 		str_kat_result = ''
+		str_kat_result2 = ''
 		str_idx = ''
 		idx = 0
 		for category in categories:
@@ -161,6 +116,7 @@ def prediksi(p_judul, p_metode):
 			if resultF[0] == 0:
 				kategori_res.append(category)
 				str_kat_result += category+','
+				str_kat_result2 += category+', '
 				str_idx += str(idx) + '#'
 			print('===============================')
 			idx += 1
@@ -169,13 +125,43 @@ def prediksi(p_judul, p_metode):
 		
 		label = str_kat_result + str_idx
 	print('Prediksi: ', label)		
-	return label, metod
+	return label, metod, str_kat_result2
 
 
 @app.route('/')
 def index():
     return render_template('index.html')
 
+@app.route('/history')
+def index_history():
+    return render_template('index_history.html')
+
+
+
+
+@app.route('/json_judul')
+def json_judul():
+	conn = db_connect()
+	# ~ cur = con.cursor() 
+	query = "select * from daftar_judul" 
+	# ~ cur.execute(query)
+	# ~ listdata = cur.fetchall()
+	# ~ con.commit()
+	
+	conn.row_factory = sqlite3.Row
+	df = pd.read_sql(query, conn)
+	conn.close()
+	print('df: ',df)
+	
+	result = df.to_json(orient="records")
+	parsed = json.loads(result)
+	# ~ json_data = json.dumps(parsed)  
+	
+	
+	# ~ json_data = df.to_json()
+	print('parsed: ',parsed)
+	
+	return jsonify({'data': parsed})
 
 @app.route('/api/users', methods=['GET'])
 def get_users():
@@ -187,9 +173,18 @@ def login():
 	judul = request.json.get('judul')
 	print('judul: ', judul)
 	
-	str_pred, metod = prediksi(judul, '10')
+	str_pred, metod, str_kat_result = prediksi(judul, '10')
 	print('str_pred: ',str_pred)
 	print('metod: ',metod)
+	
+	if len(judul) > 0:
+		con = db_connect()
+		cur = con.cursor() 
+		query = "insert into artikel_pred (judul, prediksi) values('%s','%s')" % (judul, str_kat_result)
+		print('query: ', query)
+		cur.execute(query)
+		con.commit()
+		
 	return jsonify({'prediksi': str_pred, 'metode': metod})
 	
 
@@ -210,8 +205,5 @@ def get_user(metode,data):
 	print('metod: ',metod)
 	return jsonify({'prediksi': str_pred, 'metode': metod})
 	
-
-
 if __name__ == '__main__':
-    # ~ app.run(debug=True, host='192.168.20.3', port=5500)
     app.run()
