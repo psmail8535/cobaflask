@@ -3,11 +3,12 @@ from flask import Flask, render_template, request
 from flask_restful import Resource, Api
 from flask import jsonify
 from threading import Lock
-import pickle 
+import pickle, psycopg2
+from psycopg2.extras import RealDictCursor
 from sklearn.datasets import load_files
 from sklearn.model_selection import train_test_split
 from sklearn.feature_extraction.text import TfidfVectorizer	
-import sqlite3		
+# ~ import sqlite3		
 import os, sys, json
 
 import pandas as pd
@@ -20,11 +21,21 @@ from sklearn.svm import LinearSVC
 from sklearn.linear_model import LogisticRegression
 from sklearn.pipeline import Pipeline
 
-DEFAULT_PATH = os.path.join(os.path.dirname(__file__), 'the_data.sqlite3')
-def db_connect(db_path=DEFAULT_PATH):
-    con = sqlite3.connect(db_path)
-    return con
+# ~ DEFAULT_PATH = os.path.join(os.path.dirname(__file__), 'the_data.sqlite3')
+# ~ def db_connect(db_path=DEFAULT_PATH):
+    # ~ con = sqlite3.connect(db_path)
+    # ~ return con
 
+def db_connect():
+	con = psycopg2.connect(
+	   database="d1prm2aq0rume1", user='hbvnkkcfmloojy'
+	   , password='33a85551bf829bcecfb06b8f6ca80c2953a17deba76f1c5c04a7cd198a49048a'
+	   , host='ec2-44-205-41-76.compute-1.amazonaws.com'
+	   , port= '5432'
+	   , sslmode='require'
+	)
+	return con
+	
 app = Flask(__name__)
 api = Api(app)
 
@@ -137,17 +148,28 @@ def index_history():
     return render_template('index_history.html')
 
 
-
-
 @app.route('/json_judul')
 def json_judul():
 	conn = db_connect()
 	# ~ cur = con.cursor() 
-	query = "select * from daftar_judul" 
-	# ~ cur.execute(query)
-	# ~ listdata = cur.fetchall()
-	# ~ con.commit()
+	strQuery = "select * from daftar_judul" 
 	
+	print('strQuery: ',strQuery)
+	cur = conn.cursor(cursor_factory=RealDictCursor)
+	cur.execute(strQuery)
+	users = cur.fetchall()
+
+	print('users: ', users)
+	count = len(users)
+	print('count: ', count)
+	cur.close()
+	conn.close()
+
+	# ~ data = {'msg': users, 'success':1}
+	print('data: ', users)
+	return jsonify({'data': users}), 200
+	
+	'''
 	conn.row_factory = sqlite3.Row
 	df = pd.read_sql(query, conn)
 	conn.close()
@@ -162,6 +184,7 @@ def json_judul():
 	print('parsed: ',parsed)
 	
 	return jsonify({'data': parsed})
+	'''
 
 @app.route('/api/users', methods=['GET'])
 def get_users():
